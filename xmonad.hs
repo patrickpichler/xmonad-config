@@ -5,37 +5,28 @@ import XMonad.Util.EZConfig(additionalKeys, additionalKeysP)
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.SpawnOnce
 import XMonad.Config.Desktop
-import XMonad.Config.Gnome
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.SetWMName
 import System.IO
 import Graphics.X11.ExtraTypes.XF86
 import Data.Default
+import XMonad.Hooks.EwmhDesktops        (ewmh)
+import XMonad.Hooks.ManageDocks
 
 main = do
-  xmproc <- spawnPipe "xmobar /home/patrick/.xmobarrc"
-  -- xmproc <- spawnPipe "/home/patrick/.config/polybar/launch.sh"
-  -- xmproc <- spawnPipe "tint2"
-  -- nm <- spawnPipe "nm-applet"
-  -- autostart <- spawnOnce "bash $HOME/.xmonad/autostart.sh"
+  xmproc <- spawnPipe "/home/patrick/.asdf/shims/my-taffybar"
 
-  xmonad $ desktopConfig
+  xmonad $ docks $ ewmh $ desktopConfig
     { modMask = myModMask
     , terminal = "termite"
     , borderWidth = 1 
+    , focusedBorderColor = "#222222"
     , layoutHook = avoidStruts $ layoutHook def
     , handleEventHook    = handleEventHook def <+> docksEventHook
     , manageHook = manageHook def <+> manageDocks <+> myManageHook
     , startupHook = do 
                 setWMName "LG3D"
                 docksStartupHook
-    -- , startupHook = do
-              -- spawnOnce "bash /home/patrick/.xmonad/autostart.sh"
-              -- spawnOnce "echo $HOME > /home/patrick/test.txt"
-    , logHook = dynamicLogWithPP xmobarPP
-      { ppOutput = hPutStrLn xmproc
-      , ppTitle = xmobarColor "green" "" . shorten 50
-      }
     } `additionalKeysP` myKeys
 
 myModMask = mod4Mask -- Use Super instead of Alt
